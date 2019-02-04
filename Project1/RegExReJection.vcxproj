@@ -76,8 +76,12 @@
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="mmap_file.cpp" />
+    <ClCompile Include="regex_parser_single.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mmap_file.h" />
+    <ClInclude Include="regex_parser_single.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
