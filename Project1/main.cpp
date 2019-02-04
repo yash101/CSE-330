@@ -8,7 +8,7 @@ void help(int argc, char** argv) {
 
 int main(int argc, char** argv)
 {
-	MemoryMappedFile file("/home/chaos/install_x11_windows.md");
+	MemoryMappedFile file("/home/chaos/install_x11_windows.md", MemoryMappedFile::MODE_READ);
 	for (size_t i = 0; i < file.getFileSize(); i++) {
 		printf("%c", file[i]);
 	}

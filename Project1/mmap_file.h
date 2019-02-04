@@ -10,9 +10,14 @@ private:
 	size_t _fileSize;
 public:
 	MemoryMappedFile();
-	MemoryMappedFile(std::string filename);
-	bool openFile(std::string filename);
+	MemoryMappedFile(std::string filename, const unsigned int mode);
+	~MemoryMappedFile();
+
+	bool openFile(std::string filename, const unsigned int mode);
 	inline size_t getFileSize() { return _fileSize;  }
 	inline operator unsigned char*() { return _mappedFile;  }
-	~MemoryMappedFile();
+	
+	const static unsigned int MODE_READ = 0x1;
+	const static unsigned int MODE_WRITE = 0x2;
+	const static unsigned int MODE_EXEC = 0x4;
 };
