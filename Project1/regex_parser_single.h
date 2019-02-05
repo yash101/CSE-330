@@ -12,6 +12,7 @@ class SingleThreadedRegularExpressionParser
 	MemoryMappedFile file;
 public:
 	SingleThreadedRegularExpressionParser();
+	SingleThreadedRegularExpressionParser(std::string reg, std::string filename);
 	inline void setRegex(std::string reg) { regex = reg; }
 	inline void setFileData(std::string& data) { file_data = data; }
 	inline void openFile(std::string filename) { file = MemoryMappedFile(filename, MemoryMappedFile::MODE_READ); }
