@@ -1,4 +1,4 @@
-BIN=proj1
+BIN=search
 
 all: $(OBJ)
 	$(CXX) -o $(BIN) $(wildcard *.cpp) -std=c++11
