@@ -8,7 +8,6 @@ size_t WordTrie::get_count(char* str)
 	if (!str)
 		return root.count;
 
-	char* cur = str;
 	WordTrieNode* current = &root;
 
 	while (current)
@@ -17,7 +16,7 @@ size_t WordTrie::get_count(char* str)
 		{
 			return current->count;
 		}
-		current = current->letter[*str];
+		current = current->letter[static_cast<size_t>(*str)];
 	}
 
 	// Search failed
@@ -39,11 +38,11 @@ void WordTrie::increment_word(char* str)
 	// Iterate through the string
 	while (*str != '\0')
 	{
-		if (!current->letter[*str])
+		if (!current->letter[static_cast<size_t>(*str)])
 		{
 			// Allocate a new WordTrieNode
-			current->letter[*str] = new WordTrieNode();
-			current->letter[*str]->ch = *str;
+			current->letter[static_cast<size_t>(*str)] = new WordTrieNode();
+			current->letter[static_cast<size_t>(*str)]->ch = *str;
 		}
 		current = current->letter[*str];
 		str++;
