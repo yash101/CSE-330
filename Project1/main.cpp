@@ -1,10 +1,13 @@
+#include "mmap_file.h"
+
 #include <vector>
 #include <cstdio>
 #include <regex.h>
 #include <cstring>
-#include <regex>
-#include <fstream>
 #include <iostream>
+#include <omp.h>
+#include <thread>
+#include <algorithm>
 
 void help(int argc, char** argv) {
 	printf("%s <pattern> <list of text files>\n", argv[0]);
@@ -23,86 +26,70 @@ public:
 	AutoPointer(T* p, size_t ct) :
 		ptr(p),
 		n(ct)
-	{
-		printf("Pointer: %p\n", ptr);
-	}
+	{}
 
 	AutoPointer(size_t ct) {
-		ptr = (T*) calloc(sizeof(T), ct);
+		ptr = new T[ct];
 		n = ct;
-		printf("Pointer: %p\n", ptr);
 	}
 
-//	~AutoPointer() {
-//		if (ptr && n != 0) {
-//			printf("Before free Pointer: %p\n", ptr);
-////			free(ptr);
-//			ptr = NULL;
-//			printf("After free Pointer: %p\n", ptr);
-//			n = 0;
-//		}
-//	}
+	~AutoPointer() {
+		if (ptr && n != 0) {
+			free(ptr);
+			ptr = NULL;
+			n = 0;
+		}
+	}
 
 	T* getPtr() const { T* pt; memcpy((void*)&pt, (void*)&ptr, sizeof(T*)); return pt; }
 	size_t& size() { return n; }
 };
 
-bool isLineEnding(const unsigned char* str, size_t pos) {
-	if (str[pos] == '\n')
-		return true;
-	if (str[pos] == '\r')
-		return true;
-	return false;
+inline bool isLineEnding(char ch) { return (ch == '\n') || (ch == '\r'); }
+inline bool isReg(char ch) { return isalnum(ch); }
+inline bool isStar(char ch) { return ch == '*'; }
+inline bool isUnion(char ch) { return ch == '+'; }
+
+void parseKleene(size_t pos_r, size_t pos_s, std::string& regex, MemoryMappedFile& file) {
 }
 
-/*
-output = 
-*/
+void search_file(std::string regex, MemoryMappedFile& file) {
+	size_t pos_regex = 0;
+	size_t pos_str = 0;
+	std::string str;
+	str.reserve(file.getFileSize());
+	str.append(reinterpret_cast<char*>(static_cast<unsigned char*>(file)));
 
-bool searchFile(std::string regex_str, std::string fname) {
-	std::vector<std::string> lines;
-	std::regex reg(regex_str);
+	try {
+		std::string line = "";
 
-	std::ifstream fin(fname);
-	std::string buffer;
-	while (std::getline(fin, buffer))
-		lines.push_back(buffer);
-
-	for (size_t i = 0; i < lines.size(); i++) {
-		std::smatch match;
-		if (std::regex_search(lines[i], match, std::regex(regex_str))) {
-			std::string pre = match.prefix();
-			std::string m = match[0].str();
-			size_t start_col = pre.size() - 1;
-			size_t end_col = start_col + m.size();
-			const char* str = m.c_str();
-			printf("%s, %zd, %d, %d: %s\n",
-				fname.c_str(),
-				i,
-				start_col,
-				end_col,
-				str
-			);
+		for (std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+			if (isLineEnding(*it)) {
+				if(*it)
+			}
 		}
+
+
+	}
+	// Band-aid Code - So reliable that you want to trust your life with it
+	catch (std::exception& e) {
+		// Reached the end of the string
+		return;
 	}
 }
 
 int main(int argc, char** argv)
 {
+	clock_t start = clock();
 	if (argc < 3) {
 		help(argc, argv);
 		return -1;
 	}
 
 	std::string regex_str(argv[1]);
-
 	std::vector<std::string> files;
-
 	for (int i = 2; i < argc; i++) {
-		files.push_back(argv[i]);
-	}
-
-	for (std::vector<std::string>::const_iterator it = files.begin(); it != files.end(); ++it) {
-		searchFile(regex_str, *it);
+		MemoryMappedFile f(argv[argc], MemoryMappedFile::MODE_READ);
+		search_file(regex_str, f);
 	}
 }
