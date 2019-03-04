@@ -1,0 +1,5 @@
+cmake_minimum_required (VERSION 3.1)
+project (Project2)
+set (CMAKE_CXX_STANDARD 11)
+file(GLOB SOURCES_HEADERS "*.h" "*.cc" "*.cpp")
+add_executable(a.out ${SOURCES_HEADERS})
