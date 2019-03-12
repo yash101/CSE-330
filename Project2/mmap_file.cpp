@@ -67,7 +67,6 @@ bool MemoryMappedFile::openFile(std::string filename, const unsigned int mode) {
 	return true;
 }
 
-
 MemoryMappedFile::~MemoryMappedFile()
 {
 	if (_fileDescriptor != -1) {

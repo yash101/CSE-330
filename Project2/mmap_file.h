@@ -8,6 +8,7 @@ private:
 	int _fileDescriptor;
 	unsigned char* _mappedFile;
 	size_t _fileSize;
+	
 public:
 	MemoryMappedFile();
 	MemoryMappedFile(std::string filename, const unsigned int mode);

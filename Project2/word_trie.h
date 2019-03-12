@@ -1,6 +1,8 @@
 #ifndef _WORD_TRIE_H
 #define _WORD_TRIE_H
 
+#include "mt_essentials.h"
+
 #include <string>
 #include <atomic>
 
@@ -10,12 +12,9 @@ public:
 	WordTrieNode* letter[256];
 	std::atomic<size_t> count;
 	char ch;
+	Semaphore semaphore;
 
-	WordTrieNode() :
-		letter(),
-		count(0)
-	{}
-
+	WordTrieNode();
 	~WordTrieNode();
 };
 
@@ -26,13 +25,13 @@ private:
 
 public:
 
-	typedef void(*IterateFunc_Cb_t)(std::string& str, size_t count);
+	typedef void(*IterateFunc_Cb_t)(std::string& str, size_t count, void* data);
 
 	size_t get_count(char* str);
 	void increment_word(char* str);
 	void process_words(char* str);
 
-	void iterate(IterateFunc_Cb_t cb);
+	void iterate(IterateFunc_Cb_t cb, void* data);
 };
 
 #endif
