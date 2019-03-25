@@ -30,7 +30,7 @@ size_t WordTrie::get_count(char* str)
 	return 0;
 }
 
-void WordTrie::increment_word(char* str)
+void WordTrie::increment_word(char* str, size_t count)
 {
 	if (!str || *str == '\0')
 	{
@@ -56,7 +56,12 @@ void WordTrie::increment_word(char* str)
 		str++;
 	}
 
-	current->count++;
+	current->count += count;
+}
+
+void WordTrie::increment_word(char* str)
+{
+	increment_word(str, 1);
 }
 
 class iter_data
@@ -124,6 +129,7 @@ void parse_down(WordTrieNode* node, std::string& cur, WordTrie::IterateFunc_Cb_t
 
 	return;
 }
+
 
 void WordTrie::iterate(WordTrie::IterateFunc_Cb_t cb, void* data)
 {

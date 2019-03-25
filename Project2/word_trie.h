@@ -29,7 +29,9 @@ public:
 
 	size_t get_count(char* str);
 	void increment_word(char* str);
+	void increment_word(char* str, size_t num);
 	void process_words(char* str);
+	void merge(WordTrie& trie);
 
 	void iterate(IterateFunc_Cb_t cb, void* data);
 };
