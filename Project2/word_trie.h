@@ -10,7 +10,8 @@ class WordTrieNode
 {
 public:
 	WordTrieNode* letter[256];
-	std::atomic<size_t> count;
+	size_t count;
+//	std::atomic<size_t> count;
 	char ch;
 	Semaphore semaphore;
 

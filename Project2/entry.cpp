@@ -24,6 +24,7 @@ enum SplitType
 std::list<size_t> jobs;
 Semaphore available(0);
 Semaphore lck(1);
+bool finished = false;
 
 // Map: generate list of lines
 // Reduce: split into words and add to the trie
@@ -57,6 +58,8 @@ static void fn_print_to_file(std::string& str, size_t count, void* data)
 	fin << str << " " << count << "\n";
 }
 
+size_t jobs_left = 0;
+
 // The mapping thread needs a pointer to the file reader and 
 void* thread_map(void* data)
 {
@@ -89,6 +92,7 @@ void* thread_map(void* data)
 void* thread_reduce(void* data)
 {
 	ReduceThreadData* rtd = reinterpret_cast<ReduceThreadData*>(data);
+	WordTrie trie;
 
 	while(true)
 	{
@@ -96,6 +100,8 @@ void* thread_reduce(void* data)
 		size_t job;
 		{
 			SemaphoreLockGuard g(&lck);
+			if(finished)
+				break;
 			job = jobs.back();
 			jobs.pop_back();
 		}
@@ -271,6 +277,15 @@ void launch_reduce_workers(size_t num_map, size_t num_reduce)
 		pthread_join(lmw[i], NULL);
 	}
 
+	{
+		SemaphoreLockGuard g(&lck);
+		finished = true;
+	}
+	for(size_t i = 0; i < 5000; i++)
+	{
+		available.release();
+	}
+
 	for (size_t i = 0; i < p.size(); i++)
 	{
 		pthread_join(p[i], NULL);
@@ -283,9 +298,6 @@ void launch_reduce_workers(size_t num_map, size_t num_reduce)
 	trie.iterate(output, static_cast<void*>(NULL));
 }
 
-void launch_map_workers(size_t num_map)
-{
-}
 
 int main(int argc, char** argv)
 {
@@ -302,6 +314,5 @@ int main(int argc, char** argv)
 	MemoryMappedFile file(input_file, MemoryMappedFile::MODE_READ);
 
 	generate_splits(file, num_map, type);
-	launch_map_workers(num_map);
 	launch_reduce_workers(num_map, num_reduce);
 }
