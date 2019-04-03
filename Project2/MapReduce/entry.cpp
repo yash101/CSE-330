@@ -118,16 +118,19 @@ void* thread_reduce(void* data)
 			str >> word;
 			str >> count;
 
-			rtd->trie->increment_word(const_cast<char*>(word.c_str()), count);
+			trie.increment_word(const_cast<char*>(word.c_str()), count);
 		}
 	}
 
 	std::ostringstream sout;
 	sout << "reduce-out-" << rtd->worker_id + 1 << ".txt";
 	std::ofstream fout(sout.str());
+	if(!fout.is_open())
+	{
+		printf("Error: unable to open file for writing\n");
+	}
 	
-	rtd->trie->iterate(fn_print_to_file, &fout);
-
+	trie.iterate(fn_print_to_file, &fout); 
 	delete rtd;
 }
 
@@ -295,6 +298,28 @@ void launch_reduce_workers(size_t num_map, size_t num_reduce)
 	{
 		it->iterate(merge_tries, reinterpret_cast<void*>(&trie));
 	}
+
+	for(size_t i = 0; i < num_map; i++)
+	{
+		std::ostringstream s;
+		s << "reduce-out-" << i + 1 << ".txt";
+		std::ifstream fin(s.str());
+
+		std::string buffer;
+		while(std::getline(fin, buffer)) {
+			std::istringstream str(buffer);
+			std::string word;
+			size_t count;
+			str >> word;
+			str >> count;
+
+			trie.increment_word(const_cast<char*>(word.c_str()), count);
+		}
+
+
+	}
+
+
 	trie.iterate(output, static_cast<void*>(NULL));
 }
 

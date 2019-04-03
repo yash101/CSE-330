@@ -4,10 +4,13 @@
 #include <stack>
 
 WordTrieNode::WordTrieNode() :
-	letter(),
 	count(0),
 	semaphore(1)
 {
+	for(size_t i = 0; i < sizeof(letter) / sizeof(letter[0]); i++)
+	{
+		letter[i] = NULL;
+	}
 }
 
 size_t WordTrie::get_count(char* str)
@@ -50,6 +53,10 @@ void WordTrie::increment_word(char* str, size_t count)
 		{
 			// Allocate a new WordTrieNode
 			current->letter[static_cast<size_t>(*str)] = new WordTrieNode();
+			if(!current->letter[static_cast<size_t>(*str)])
+			{
+				printf("Error, allocation failed!\n");
+			}
 			current->letter[static_cast<size_t>(*str)]->ch = *str;
 		}
 		current = current->letter[*str];
@@ -110,8 +117,7 @@ void parse_down(WordTrieNode* node, std::string& cur, WordTrie::IterateFunc_Cb_t
 	if (!node)
 	{
 		return;
-	}
-
+	} 
 	cur.push_back(node->ch);
 
 	if (node->count > 0)

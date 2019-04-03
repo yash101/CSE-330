@@ -1,0 +1,21 @@
+internet
+compuserve
+attmail
+mcimail
+address type
+
+when all other email fails try our michael s
+hart
+
+we would prefer to send you this information by email
+
+
+
+if you have an ftp program 
+
+ftp directly to the project gutenberg archives
+ftp mrcnext
+login
+password
+cd etext
+or cd etext
