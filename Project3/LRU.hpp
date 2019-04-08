@@ -41,7 +41,8 @@ namespace LRU
 		{}
 		~LRU()
 		{
-			set_max_size(0);
+			for(auto it = map.begin(); it != map.end(); ++it)
+				delete reinterpret_cast<Node*>(it->second);
 		}
 
 		void set_max_size(size_t bytes)
@@ -51,10 +52,10 @@ namespace LRU
 			{
 				while(front)
 				{
+					Node* tmp = front;
 					front = front->next;
-					delete front->prev;
+					delete tmp;
 				}
-				delete front;
 				map.clear();
 				return;
 			}
@@ -85,31 +86,55 @@ namespace LRU
 		{
 			bool ret;
 			auto find = map.find(key);
+			// Already in the LRU
 			if (find != map.end())
 			{
-				Node* acc = find->second;
-				if(acc->prev == nullptr)
-				{
-					return true;
-				}
-				acc->prev->next = acc->next;
-				acc->next = front;
-				acc->prev = nullptr;
-				front = acc;
+				// Get the pointer to the right node
+				Node* block = find->second;
 
+				// Save the previous and next pointers
+				// Move the block to the front
+
+				Node* prev = block->prev;
+				Node* next = block->next;
+
+				// If this is the only element in the linked list
+				if (prev == nullptr)
+				{
+					// The only element in the linked list
+					ret = true;
+				}
+
+				// If this the the last element in the linked list
+				if (next == nullptr)
+				{
+					block->next = front;
+					block->prev->next = nullptr;
+					block->prev = nullptr;
+					front = block;
+					ret = true;
+				}
+
+				Node* tmp = block;
+				block->prev->next = block->next;
+				block->next->prev = block->prev;
+				block->next = front;
+				block->prev = nullptr;
+
+				front = block;
+				
 				ret = true;
 			}
 			else
 			{
-				Node* add = new Node;
-				add->key = key;
-				add->prev = nullptr;
-				add->next = front;
-				front = add;
-				cache_used++;
+				Node* block = new Node;
+				block->key = key;
+				block->next = front;
+				block->prev = nullptr;
+				front = block;
 
-				if(front == nullptr)
-					front = add;
+				map[key] = front;
+				cache_used++;
 
 				ret = false;
 			}
@@ -118,7 +143,9 @@ namespace LRU
 			{
 				Node* tmp = end;
 				end = tmp->prev;
+				end->next = nullptr;
 				map.erase(tmp->key);
+				cache_used--;
 				delete tmp;
 			}
 
@@ -130,7 +157,7 @@ namespace LRU
 			size_t ret = 0;
 			for(size_t i = 0; i < num; i++)
 			{
-				ret = access(from + i) ? ret + 1 : ret;
+				ret += access(from + i) ? 1 : 0;
 			}
 
 			return ret;

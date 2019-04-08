@@ -1,2 +1,5 @@
 lru
 *.o
+TestCases
+*.swp
+*.swo
