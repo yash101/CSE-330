@@ -8,7 +8,7 @@
 
 namespace LRU
 {
-	template <>
+	template <typename T>
 	class LRU
 	{
 	private:
@@ -26,7 +26,8 @@ namespace LRU
 		};
 
 		std::unordered_map<size_t, Node*> map;
-		Node* front, end;
+		Node* front;
+		Node* end;
 		
 		size_t cache_size;
 		size_t cache_used;
@@ -40,6 +41,7 @@ namespace LRU
 		{}
 		~LRU()
 		{
+			set_max_size(0);
 		}
 
 		void set_max_size(size_t bytes)
@@ -47,7 +49,13 @@ namespace LRU
 			cache_size = bytes;
 			if(cache_size == 0)
 			{
-				storage.clear();
+				while(front)
+				{
+					front = front->next;
+					delete front->prev;
+				}
+				delete front;
+				map.clear();
 				return;
 			}
 
@@ -69,7 +77,7 @@ namespace LRU
 
 		bool check(size_t blockno)
 		{
-			auto find = map.find(key);
+			auto find = map.find(blockno);
 			return find != map.end();
 		}
 
@@ -94,11 +102,14 @@ namespace LRU
 			else
 			{
 				Node* add = new Node;
-				add->key = location;
+				add->key = key;
 				add->prev = nullptr;
 				add->next = front;
 				front = add;
 				cache_used++;
+
+				if(front == nullptr)
+					front = add;
 
 				ret = false;
 			}
@@ -119,7 +130,7 @@ namespace LRU
 			size_t ret = 0;
 			for(size_t i = 0; i < num; i++)
 			{
-				ret = access(key) ? ret + 1 : ret;
+				ret = access(from + i) ? ret + 1 : ret;
 			}
 
 			return ret;

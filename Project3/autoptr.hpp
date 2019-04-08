@@ -34,7 +34,7 @@ namespace Util
 			return ptr;
 		}
 
-		T* operator()
+		T* operator()()
 		{
 			return ptr;
 		}
