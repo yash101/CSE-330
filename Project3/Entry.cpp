@@ -31,7 +31,7 @@ int main(int argc, char** argv)
 	argv = const_cast<char**>(argv_tmp);
 #endif
 
-	LRU::LRU<void> lru;
+	LRU::LRU<size_t> lru;
 	size_t total_blocks_accessed = 0;
 	size_t total_hits = 0;
 	lru.set_max_size(from_string<size_t>(argv[1]));

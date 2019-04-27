@@ -12,25 +12,13 @@ namespace LRU
 	class LRU
 	{
 	private:
-		class Node
-		{
-		public:
-			Node* prev;
-			Node* next;
-			size_t key;
-
-			Node() :
-				prev(nullptr),
-				next(nullptr)
-			{}
-		};
-
-		std::list<size_t> list;
-		std::unordered_map<size_t, std::list<size_t>::iterator> map;
+		
+		std::list<T> list;
+		std::unordered_map<T, typename std::list<T>::iterator> map;
 		
 		size_t cache_size;
 		size_t cache_used;
-	protected:
+
 	public:
 		LRU() :
 			cache_size(0),
@@ -51,7 +39,7 @@ namespace LRU
 
 			while (cache_used > cache_size)
 			{
-				size_t rm = list.back();
+				auto rm = list.back();
 				list.pop_back();
 				map.erase(rm);
 				cache_used--;
@@ -66,7 +54,7 @@ namespace LRU
 			{
 				if (list.size() >= cache_size)
 				{
-					size_t back = list.back();
+					auto back = list.back();
 					list.pop_back();
 					map.erase(back);
 				}
